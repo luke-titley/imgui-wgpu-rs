@@ -67,7 +67,7 @@ pub struct Texture {
 impl Texture {
     /// Creates a new imgui texture from a wgpu texture.
     pub fn new(
-        texture: wgpu::Texture,
+        texture: &wgpu::Texture,
         layout: &BindGroupLayout,
         device: &Device,
         label: Option<&str>,
@@ -512,7 +512,7 @@ impl Renderer {
             },
         );
 
-        let texture = Texture::new(texture, &self.texture_layout, device, label);
+        let texture = Texture::new(&texture, &self.texture_layout, device, label);
         self.textures.insert(texture)
     }
 
@@ -525,7 +525,7 @@ impl Renderer {
         format: TextureFormat,
         sample_count: u32,
         label: Option<&str>,
-    ) -> TextureId {
+    ) -> (wgpu::Texture, TextureId) {
         // Create the wgpu texture.
         let texture = device.create_texture(&TextureDescriptor {
             label: None,
@@ -541,7 +541,9 @@ impl Renderer {
             usage: wgpu::TextureUsage::SAMPLED | wgpu::TextureUsage::OUTPUT_ATTACHMENT,
         });
 
-        let texture = Texture::new(texture, &self.texture_layout, device, label);
-        self.textures.insert(texture)
+        let texture_id =
+            self.textures
+                .insert(Texture::new(&texture, &self.texture_layout, device, label));
+        (texture, texture_id)
     }
 }
