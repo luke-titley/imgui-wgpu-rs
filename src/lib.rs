@@ -515,4 +515,33 @@ impl Renderer {
         let texture = Texture::new(texture, &self.texture_layout, device, label);
         self.textures.insert(texture)
     }
+
+    /// Creates and new wgpu texture which you can use in imgui::Image.
+    pub fn create_texture(
+        &mut self,
+        device: &Device,
+        width: u32,
+        height: u32,
+        format: TextureFormat,
+        sample_count: u32,
+        label: Option<&str>,
+    ) -> TextureId {
+        // Create the wgpu texture.
+        let texture = device.create_texture(&TextureDescriptor {
+            label: None,
+            size: Extent3d {
+                width,
+                height,
+                depth: 1,
+            },
+            mip_level_count: 1,
+            sample_count,
+            dimension: TextureDimension::D2,
+            format,
+            usage: wgpu::TextureUsage::COPY_SRC | wgpu::TextureUsage::OUTPUT_ATTACHMENT,
+        });
+
+        let texture = Texture::new(texture, &self.texture_layout, device, label);
+        self.textures.insert(texture)
+    }
 }
