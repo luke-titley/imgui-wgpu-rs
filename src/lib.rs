@@ -538,7 +538,7 @@ impl Renderer {
             sample_count,
             dimension: TextureDimension::D2,
             format,
-            usage: wgpu::TextureUsage::COPY_SRC | wgpu::TextureUsage::OUTPUT_ATTACHMENT,
+            usage: wgpu::TextureUsage::SAMPLED | wgpu::TextureUsage::OUTPUT_ATTACHMENT,
         });
 
         let texture = Texture::new(texture, &self.texture_layout, device, label);
