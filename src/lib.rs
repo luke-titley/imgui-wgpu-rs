@@ -262,10 +262,10 @@ impl Renderer {
                     dst_factor: BlendFactor::OneMinusSrcAlpha,
                     operation: BlendOperation::Add,
                 },
-                alpha_blend: BlendDescriptor {
-                    src_factor: BlendFactor::OneMinusDstAlpha,
-                    dst_factor: BlendFactor::One,
-                    operation: BlendOperation::Add,
+                alpha_blend: wgpu::BlendDescriptor {
+                    src_factor: wgpu::BlendFactor::SrcAlpha,
+                    dst_factor: wgpu::BlendFactor::OneMinusSrcAlpha,
+                    operation: wgpu::BlendOperation::Add,
                 },
                 write_mask: ColorWrite::ALL,
             }],
@@ -462,7 +462,7 @@ impl Renderer {
             handle.width,
             handle.height,
             Some("imgui-wgpu font atlas"),
-        );
+        ).1;
 
         atlas.tex_id = font_texture_id;
     }
@@ -476,7 +476,7 @@ impl Renderer {
         width: u32,
         height: u32,
         label: Option<&str>,
-    ) -> TextureId {
+    ) -> (wgpu::Texture, TextureId) {
         // Create the wgpu texture.
         let texture = device.create_texture(&TextureDescriptor {
             label: None,
@@ -512,8 +512,8 @@ impl Renderer {
             },
         );
 
-        let texture = Texture::new(&texture, &self.texture_layout, device, label);
-        self.textures.insert(texture)
+        let new_texture = Texture::new(&texture, &self.texture_layout, device, label);
+        (texture, self.textures.insert(new_texture))
     }
 
     /// Creates and new wgpu texture which you can use in imgui::Image.
